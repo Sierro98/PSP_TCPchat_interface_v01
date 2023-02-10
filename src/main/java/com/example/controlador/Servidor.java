@@ -116,31 +116,35 @@ public class Servidor implements Runnable {
                         enviarMensaje("1. grupo1\n" +
                                 "2. grupo2\n" +
                                 "3. grupo3\n" +
-                                "4.4grupo4\n" +
+                                "4.grupo4\n" +
                                 "5. grupo5");
                     } else if (mensaje.startsWith("/join")) {
                         String[] direct2 = mensaje.split(" ");
+                        boolean unidoGrupo = false;
                         for (HashMap<String, Socket> grupo : listaGrupos) {
-                            if (direct2[1].equals("grupo1")) {
+                            if (direct2[1].equals("grupo1") && !grupo1.containsKey(nombre)) {
                                 grupo.put(nombre, client);
-                                enviarMensaje("Te uniste al grupo");
-                            } else if (direct2[1].equals("grupo2")) {
+                                unidoGrupo = true;
+                            } else if (direct2[1].equals("grupo2") && !grupo1.containsKey(nombre)) {
                                 grupo.put(nombre, client);
-                                enviarMensaje("Te uniste al grupo");
-                            } else if (direct2[1].equals("grupo3")) {
+                                unidoGrupo = true;
+                            } else if (direct2[1].equals("grupo3") && !grupo1.containsKey(nombre)) {
                                 grupo.put(nombre, client);
-                                enviarMensaje("Te uniste al grupo");
-                            } else if (direct2[1].equals("grupo4")) {
+                                unidoGrupo = true;
+                            } else if (direct2[1].equals("grupo4") && !grupo1.containsKey(nombre)) {
                                 grupo.put(nombre, client);
-                                enviarMensaje("Te uniste al grupo");
-                            } else if (direct2[1].equals("grupo5")) {
+                                unidoGrupo = true;
+                            } else if (direct2[1].equals("grupo5") && !grupo1.containsKey(nombre)) {
                                 grupo.put(nombre, client);
-                                enviarMensaje("Te uniste al grupo");
-                            } else {
-                                enviarMensaje("Grupo invalido");
+                                unidoGrupo = true;
                             }
                         }
-                    } else if (mensaje.startsWith("/grupo1")) {
+                        if (unidoGrupo) {
+                            enviarMensaje("Te uniste al grupo");
+                        } else {
+                            enviarMensaje("Error al unirse al grupo");
+                        }
+                    } else if (mensaje.startsWith("/grupo1") && grupo1.containsKey(nombre)) {
                         String[] direct2 = mensaje.split(" ");
                         grupo1.forEach(
                                 (key, value)
@@ -158,7 +162,7 @@ public class Servidor implements Runnable {
                                     }
                                 }
                         );
-                    } else if (mensaje.startsWith("/grupo2")) {
+                    } else if (mensaje.startsWith("/grupo2") && grupo1.containsKey(nombre)) {
                         String[] direct2 = mensaje.split(" ");
                         grupo2.forEach(
                                 (key, value)
@@ -176,7 +180,7 @@ public class Servidor implements Runnable {
                                     }
                                 }
                         );
-                    } else if (mensaje.startsWith("/grupo3")) {
+                    } else if (mensaje.startsWith("/grupo3") && grupo1.containsKey(nombre)) {
                         String[] direct2 = mensaje.split(" ");
                         grupo3.forEach(
                                 (key, value)
@@ -194,7 +198,7 @@ public class Servidor implements Runnable {
                                     }
                                 }
                         );
-                    } else if (mensaje.startsWith("/grupo4")) {
+                    } else if (mensaje.startsWith("/grupo4") && grupo1.containsKey(nombre)) {
                         String[] direct2 = mensaje.split(" ");
                         grupo4.forEach(
                                 (key, value)
@@ -212,7 +216,7 @@ public class Servidor implements Runnable {
                                     }
                                 }
                         );
-                    } else if (mensaje.startsWith("/grupo5")) {
+                    } else if (mensaje.startsWith("/grupo5") && grupo1.containsKey(nombre)) {
                         String[] direct2 = mensaje.split(" ");
                         grupo5.forEach(
                                 (key, value)
@@ -230,28 +234,34 @@ public class Servidor implements Runnable {
                                     }
                                 }
                         );
-                    } else if (mensaje.startsWith("/exit")) {
+                    } else if (mensaje.startsWith("/leave")) {
                         String[] direct2 = mensaje.split(" ");
+                        boolean salidaGrupo = false;
                         for (HashMap<String, Socket> grupo : listaGrupos) {
                             if (direct2[1].equals("grupo1")) {
                                 grupo.remove(nombre);
-                                enviarMensaje("Saliste del grupo");
+                                salidaGrupo = true;
                             } else if (direct2[1].equals("grupo2")) {
                                 grupo.remove(nombre);
-                                enviarMensaje("Saliste del grupo");
+                                salidaGrupo = true;
                             } else if (direct2[1].equals("grupo3")) {
                                 grupo.remove(nombre);
-                                enviarMensaje("Saliste del grupo");
+                                salidaGrupo = true;
                             } else if (direct2[1].equals("grupo4")) {
                                 grupo.remove(nombre);
-                                enviarMensaje("Saliste del grupo");
+                                salidaGrupo = true;
                             } else if (direct2[1].equals("grupo5")) {
                                 grupo.remove(nombre);
-                                enviarMensaje("Saliste del grupo");
+                                salidaGrupo = true;
                             } else {
                                 enviarMensaje("Grupo invalido");
                             }
                         }
+                        if (salidaGrupo) enviarMensaje("Saliste del grupo");
+                    } else if (mensaje.startsWith("/grupo") && !grupo1.containsKey(nombre)
+                            && !grupo2.containsKey(nombre) && !grupo3.containsKey(nombre) && !grupo4.containsKey(nombre)
+                            && !grupo5.containsKey(nombre)) {
+                        enviarMensaje("No se pertenece a dicho grupo");
                     } else {
                         broadcast(nombre + ": " + mensaje);
                     }
