@@ -43,6 +43,10 @@ public class Servidor implements Runnable {
         listaGrupos.add(grupo5);
     }
 
+    public HashMap<String, Socket> getListaUsuarios() {
+        return listaUsuarios;
+    }
+
     @Override
     public void run() {
         try {
@@ -262,6 +266,10 @@ public class Servidor implements Runnable {
                             && !grupo2.containsKey(nombre) && !grupo3.containsKey(nombre) && !grupo4.containsKey(nombre)
                             && !grupo5.containsKey(nombre)) {
                         enviarMensaje("No se pertenece a dicho grupo");
+                    } else if (mensaje.startsWith("/users")) {
+                        for (String userName : listaUsuarios.keySet()) {
+                            enviarMensaje("user: " + userName);
+                        }
                     } else {
                         broadcast(nombre + ": " + mensaje);
                     }

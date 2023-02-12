@@ -1,11 +1,9 @@
 package com.example.controlador;
 
-import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyEvent;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,13 +11,11 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class Cliente implements Initializable {
-    public ListView listViewUsuarios;
+    public ListView<String> listViewUsuarios;
     public ListView<String> listViewMensajes;
     public Button btnEnviar;
     public Button grupo2_btn;
@@ -29,6 +25,14 @@ public class Cliente implements Initializable {
     public Button grupo5_btn;
     public TextField tf_espacioEscritura;
     public Button btnIniciar;
+    public Button btnSalir;
+    public Button send2Grupo2;
+    public Button send2Grupo3;
+    public Button send2Grupo4;
+    public Button send2Grupo5;
+    public Button send2Grupo1;
+    public Button btnRefreshUsers;
+    ClienteHandler clienteHandler;
     private Socket client;
     private BufferedReader in;
     private PrintWriter out;
@@ -37,7 +41,6 @@ public class Cliente implements Initializable {
     private String mensaje;
     private ButtonType entrar = new ButtonType("Entrar", ButtonBar.ButtonData.OK_DONE);
     private ButtonType salir = new ButtonType("Salir", ButtonBar.ButtonData.CANCEL_CLOSE);
-    private List<String> mensajesRecibidos;
 
     public void action_btnGrupo(ActionEvent actionEvent) {
         //TODO: el handling de los botones esta mal hecho, hacer como en el proyecto de interfaces
@@ -47,34 +50,34 @@ public class Cliente implements Initializable {
         alert.setTitle("ATENTO");
         Optional<ButtonType> result = alert.showAndWait();
         if (actionEvent.getSource().equals(grupo1_btn)) {
-            if (result.equals(entrar)) {
-
-            } else if (result.equals(salir)) {
-
+            if (result.isPresent() && result.get() == entrar) {
+                out.println("/join grupo1");
+            } else if (result.isPresent() && result.get() == salir) {
+                out.println("/leave grupo1");
             }
         } else if (actionEvent.getSource().equals(grupo2_btn)) {
-            if (result.equals(entrar)) {
-
-            } else if (result.equals(salir)) {
-
+            if (result.isPresent() && result.get() == entrar) {
+                out.println("/join grupo2");
+            } else if (result.isPresent() && result.get() == salir) {
+                out.println("/leave grupo2");
             }
         } else if (actionEvent.getSource().equals(grupo3_btn)) {
-            if (result.equals(entrar)) {
-
-            } else if (result.equals(salir)) {
-
+            if (result.isPresent() && result.get() == entrar) {
+                out.println("/join grupo3");
+            } else if (result.isPresent() && result.get() == salir) {
+                out.println("/leave grupo3");
             }
         } else if (actionEvent.getSource().equals(grupo4_btn)) {
-            if (result.equals(entrar)) {
-
-            } else if (result.equals(salir)) {
-
+            if (result.isPresent() && result.get() == entrar) {
+                out.println("/join grupo4");
+            } else if (result.isPresent() && result.get() == salir) {
+                out.println("/leave grupo4");
             }
         } else if (actionEvent.getSource().equals(grupo5_btn)) {
-            if (result.equals(entrar)) {
-
-            } else if (result.equals(salir)) {
-
+            if (result.isPresent() && result.get() == entrar) {
+                out.println("/join grupo5");
+            } else if (result.isPresent() && result.get() == salir) {
+                out.println("/leave grupo5");
             }
         }
     }
@@ -82,6 +85,39 @@ public class Cliente implements Initializable {
     public void enviarMensaje(ActionEvent actionEvent) {
         String mensaje2Send = tf_espacioEscritura.getText();
         out.println(mensaje2Send);
+        tf_espacioEscritura.setText("");
+    }
+
+    public void send2(ActionEvent actionEvent) {
+        if (actionEvent.getSource().equals(send2Grupo1)) {
+            String mensaje2Send = tf_espacioEscritura.getText();
+            out.println("/grupo1 " + mensaje2Send);
+            tf_espacioEscritura.setText("");
+        } else if (actionEvent.getSource().equals(send2Grupo2)) {
+            String mensaje2Send = tf_espacioEscritura.getText();
+            out.println("/grupo2 " + mensaje2Send);
+            tf_espacioEscritura.setText("");
+        } else if (actionEvent.getSource().equals(send2Grupo3)) {
+            String mensaje2Send = tf_espacioEscritura.getText();
+            out.println("/grupo3 " + mensaje2Send);
+            tf_espacioEscritura.setText("");
+        } else if (actionEvent.getSource().equals(send2Grupo4)) {
+            String mensaje2Send = tf_espacioEscritura.getText();
+            out.println("/grupo4 " + mensaje2Send);
+            tf_espacioEscritura.setText("");
+        } else if (actionEvent.getSource().equals(send2Grupo5)) {
+            String mensaje2Send = tf_espacioEscritura.getText();
+            out.println("/grupo5 " + mensaje2Send);
+            tf_espacioEscritura.setText("");
+        }
+    }
+
+    public void onEnter(KeyEvent keyEvent) {
+        if (keyEvent.getCode().toString().equals("ENTER")) {
+            String mensaje2Send = tf_espacioEscritura.getText();
+            out.println(mensaje2Send);
+            tf_espacioEscritura.setText("");
+        }
     }
 
     @Override
@@ -93,38 +129,12 @@ public class Cliente implements Initializable {
         try {
             client = new Socket("localhost", 6000);
             out = new PrintWriter(client.getOutputStream(), true);
-            mensajesRecibidos = new ArrayList<>();
-            ClienteHandler clienteHandler = new ClienteHandler(client);
-
-            clienteHandler.recibirMensaje(listViewMensajes);
+            clienteHandler = new ClienteHandler(client);
+            clienteHandler.recibirMensaje(listViewMensajes, listViewUsuarios);
         } catch (IOException e) {
             shudown();
         }
     }
-
-    //MANEJADOR DE INPUTS
-//    class InputHandler implements Runnable {
-//        @Override
-//        public void run() {
-//            try {
-//                BufferedReader inReader = new BufferedReader(new InputStreamReader(System.in));
-//                while (!done) {
-//                    mensaje = inReader.readLine();
-//                    if (mensaje.equals("/quit")) {
-//                        out.println(mensaje);
-//                        inReader.close();
-//                        shudown();
-//                    } else {
-//                        mensajesRecibidos.add(mensaje);
-//                        out.println(mensaje);
-//                    }
-//                }
-//            } catch (IOException e) {
-//                shudown();
-//            }
-//        }
-//    }
-
 
     public void shudown() {
         done = true;
@@ -139,34 +149,13 @@ public class Cliente implements Initializable {
         }
     }
 
-    public class IniciarCliente implements Runnable {
-        @Override
-        public void run() {
-            try {
-                client = new Socket("localhost", 6000);
-                out = new PrintWriter(client.getOutputStream(), true);
-                in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+    public void cerrarApp(ActionEvent actionEvent) {
+        clienteHandler.setDone(true);
+        out.println("/quit");
+        listViewMensajes.getItems().clear();
+    }
 
-                String inMensaje;
-                while ((inMensaje = in.readLine()) != null) {
-                    System.out.println(inMensaje);
-                }
-            } catch (IOException e) {
-                shudown();
-            }
-        }
-
-        public void shudown() {
-            done = true;
-            try {
-                in.close();
-                out.close();
-                if (!client.isClosed()) {
-                    client.close();
-                }
-            } catch (IOException e) {
-                //ignore
-            }
-        }
+    public void refreshUsers(ActionEvent actionEvent) {
+        out.println("/users");
     }
 }
