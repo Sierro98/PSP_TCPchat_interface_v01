@@ -1,5 +1,8 @@
 package com.example.controlador;
 
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -10,12 +13,14 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class Cliente implements Initializable {
     public ListView listViewUsuarios;
-    public ListView listViewMensajes;
+    public ListView<String> listViewMensajes;
     public Button btnEnviar;
     public Button grupo2_btn;
     public Button grupo1_btn;
@@ -32,6 +37,7 @@ public class Cliente implements Initializable {
     private String mensaje;
     private ButtonType entrar = new ButtonType("Entrar", ButtonBar.ButtonData.OK_DONE);
     private ButtonType salir = new ButtonType("Salir", ButtonBar.ButtonData.CANCEL_CLOSE);
+    private List<String> mensajesRecibidos;
 
     public void action_btnGrupo(ActionEvent actionEvent) {
         //TODO: el handling de los botones esta mal hecho, hacer como en el proyecto de interfaces
@@ -40,31 +46,31 @@ public class Cliente implements Initializable {
                         "¿Desea entrar o salir?", entrar, salir);
         alert.setTitle("ATENTO");
         Optional<ButtonType> result = alert.showAndWait();
-        if (grupo1_btn.equals(actionEvent)) {
+        if (actionEvent.getSource().equals(grupo1_btn)) {
             if (result.equals(entrar)) {
 
             } else if (result.equals(salir)) {
 
             }
-        } else if (grupo2_btn.equals(actionEvent)) {
+        } else if (actionEvent.getSource().equals(grupo2_btn)) {
             if (result.equals(entrar)) {
 
             } else if (result.equals(salir)) {
 
             }
-        } else if (grupo3_btn.equals(actionEvent)) {
+        } else if (actionEvent.getSource().equals(grupo3_btn)) {
             if (result.equals(entrar)) {
 
             } else if (result.equals(salir)) {
 
             }
-        } else if (grupo4_btn.equals(actionEvent)) {
+        } else if (actionEvent.getSource().equals(grupo4_btn)) {
             if (result.equals(entrar)) {
 
             } else if (result.equals(salir)) {
 
             }
-        } else if (grupo5_btn.equals(actionEvent)) {
+        } else if (actionEvent.getSource().equals(grupo5_btn)) {
             if (result.equals(entrar)) {
 
             } else if (result.equals(salir)) {
@@ -87,33 +93,38 @@ public class Cliente implements Initializable {
         try {
             client = new Socket("localhost", 6000);
             out = new PrintWriter(client.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+            mensajesRecibidos = new ArrayList<>();
+            ClienteHandler clienteHandler = new ClienteHandler(client);
+
+            clienteHandler.recibirMensaje(listViewMensajes);
         } catch (IOException e) {
             shudown();
         }
     }
 
     //MANEJADOR DE INPUTS
-    class InputHandler implements Runnable {
-        @Override
-        public void run() {
-            try {
-                BufferedReader inReader = new BufferedReader(new InputStreamReader(System.in));
-                while (!done) {
-                    mensaje = inReader.readLine();
-                    if (mensaje.equals("/quit")) {
-                        out.println(mensaje);
-                        inReader.close();
-                        shudown();
-                    } else {
-                        out.println(mensaje);
-                    }
-                }
-            } catch (IOException e) {
-                shudown();
-            }
-        }
-    }
+//    class InputHandler implements Runnable {
+//        @Override
+//        public void run() {
+//            try {
+//                BufferedReader inReader = new BufferedReader(new InputStreamReader(System.in));
+//                while (!done) {
+//                    mensaje = inReader.readLine();
+//                    if (mensaje.equals("/quit")) {
+//                        out.println(mensaje);
+//                        inReader.close();
+//                        shudown();
+//                    } else {
+//                        mensajesRecibidos.add(mensaje);
+//                        out.println(mensaje);
+//                    }
+//                }
+//            } catch (IOException e) {
+//                shudown();
+//            }
+//        }
+//    }
+
 
     public void shudown() {
         done = true;
