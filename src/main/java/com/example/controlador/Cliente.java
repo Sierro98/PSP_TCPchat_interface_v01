@@ -34,6 +34,7 @@ public class Cliente implements Initializable {
     private ButtonType salir = new ButtonType("Salir", ButtonBar.ButtonData.CANCEL_CLOSE);
 
     public void action_btnGrupo(ActionEvent actionEvent) {
+        //TODO: el handling de los botones esta mal hecho, hacer como en el proyecto de interfaces
         Alert alert =
                 new Alert(Alert.AlertType.INFORMATION,
                         "¿Desea entrar o salir?", entrar, salir);
