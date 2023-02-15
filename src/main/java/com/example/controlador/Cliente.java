@@ -1,9 +1,12 @@
 package com.example.controlador;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -43,7 +46,6 @@ public class Cliente implements Initializable {
     private ButtonType salir = new ButtonType("Salir", ButtonBar.ButtonData.CANCEL_CLOSE);
 
     public void action_btnGrupo(ActionEvent actionEvent) {
-        //TODO: el handling de los botones esta mal hecho, hacer como en el proyecto de interfaces
         Alert alert =
                 new Alert(Alert.AlertType.INFORMATION,
                         "¿Desea entrar o salir?", entrar, salir);
@@ -153,9 +155,12 @@ public class Cliente implements Initializable {
         clienteHandler.setDone(true);
         out.println("/quit");
         listViewMensajes.getItems().clear();
+        Stage stage = (Stage) btnSalir.getScene().getWindow();
+        stage.close();
     }
 
     public void refreshUsers(ActionEvent actionEvent) {
+        listViewUsuarios.getItems().clear();
         out.println("/users");
     }
 }

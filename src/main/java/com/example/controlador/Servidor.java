@@ -103,6 +103,7 @@ public class Servidor implements Runnable {
                 String mensaje;
                 while ((mensaje = reader.readLine()) != null) {
                     if (mensaje.startsWith("/quit")) {
+                        listaUsuarios.remove(nombre);
                         broadcast(nombre + " se ha ido del chat");
                         System.out.println(nombre + " -> se desconecto");
                         shutdown();
@@ -274,7 +275,7 @@ public class Servidor implements Runnable {
                         broadcast(nombre + ": " + mensaje);
                     }
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
                 shutdown();
             }
         }

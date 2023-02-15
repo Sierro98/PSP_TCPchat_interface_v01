@@ -11,6 +11,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import javafx.stage.WindowEvent;
 
 public class Main extends Application {
 
@@ -25,7 +27,9 @@ public class Main extends Application {
             // Show the scene containing the root layout.
             Scene scene = new Scene(window);
             primaryStage.setScene(scene);
+            primaryStage.initStyle(StageStyle.UNDECORATED);
             primaryStage.show();
+
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
