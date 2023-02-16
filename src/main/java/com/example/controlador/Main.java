@@ -9,12 +9,15 @@ import java.io.IOException;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 
 public class Main extends Application {
+    private double xOffset = 0;
+    private double yOffset = 0;
 
     @Override
     public void start(Stage primaryStage) {
@@ -28,6 +31,19 @@ public class Main extends Application {
             Scene scene = new Scene(window);
             primaryStage.setScene(scene);
             primaryStage.initStyle(StageStyle.UNDECORATED);
+            //Jose Peña me ha dado estas ideas de la interfaz.
+            // Grab your root here
+            window.setOnMousePressed((MouseEvent event) -> {
+                xOffset = event.getSceneX();
+                yOffset = event.getSceneY();
+            });
+
+            // Move around here
+            window.setOnMouseDragged((MouseEvent event) -> {
+                primaryStage.setX(event.getScreenX() - xOffset);
+                primaryStage.setY(event.getScreenY() - yOffset);
+            });
+
             primaryStage.show();
 
         } catch (IOException e) {
