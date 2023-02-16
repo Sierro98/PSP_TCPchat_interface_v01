@@ -36,7 +36,7 @@ public class Cliente implements Initializable {
     public Button send2Grupo1;
     public Button btnRefreshUsers;
     ClienteHandler clienteHandler;
-    private Socket client;
+    private Socket client = null;
     private BufferedReader in;
     private PrintWriter out;
     private boolean done;
@@ -152,11 +152,15 @@ public class Cliente implements Initializable {
     }
 
     public void cerrarApp(ActionEvent actionEvent) {
-        clienteHandler.setDone(true);
-        out.println("/quit");
-        listViewMensajes.getItems().clear();
         Stage stage = (Stage) btnSalir.getScene().getWindow();
-        stage.close();
+        if (client != null) {
+            clienteHandler.setDone(true);
+            out.println("/quit");
+            listViewMensajes.getItems().clear();
+            stage.close();
+        } else {
+            stage.close();
+        }
     }
 
     public void refreshUsers(ActionEvent actionEvent) {
